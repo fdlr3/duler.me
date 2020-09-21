@@ -26,7 +26,12 @@ export class DownloadFilesButton extends Component {
         });
         if (response.ok) {
             let data = await response.json();
-            window.location = `/api/file/download/${data}`;
+
+            const link = document.createElement('a');
+            link.href = `/api/file/download/${data}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     }
 

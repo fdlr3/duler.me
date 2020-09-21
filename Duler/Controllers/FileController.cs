@@ -134,6 +134,7 @@ namespace Duler.Controllers {
         [AllowAnonymous]
         [Route("/api/file/download/{fileName}")]
         public IActionResult PrepareFilesDownload(Guid fileName) {
+            _logger.LogInformation("PrepareFileDownload from :" + fileName.ToString());
             string rootPath = Path.Combine(_environment.ContentRootPath, "Uploads", fileName.ToString());
             string filePath = Path.Combine(rootPath, $"{fileName}.zip");
             using var fs = new CustomFileStream(rootPath, filePath, FileMode.Open, FileAccess.Read, FileShare.None, 4096);
