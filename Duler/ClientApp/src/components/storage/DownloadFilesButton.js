@@ -26,12 +26,24 @@ export class DownloadFilesButton extends Component {
         });
         if (response.ok) {
             let data = await response.json();
-
-            const link = document.createElement('a');
-            link.href = `/api/file/download/${data}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            console.log(data);
+            let responseData = await fetch(`/api/file/download/${data}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': '*/*',
+                    'auth': authManager.getToken()
+                }
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                var url = window.URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = "filename.zip";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();      
+            });
         }
     }
 

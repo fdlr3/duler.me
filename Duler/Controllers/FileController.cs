@@ -131,7 +131,7 @@ namespace Duler.Controllers {
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        [CustomAuthorize]
         [Route("/api/file/download/{fileName}")]
         public IActionResult PrepareFilesDownload(Guid fileName) {
             _logger.LogInformation("PrepareFileDownload from :" + fileName.ToString());

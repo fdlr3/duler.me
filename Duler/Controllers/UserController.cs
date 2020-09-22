@@ -43,13 +43,18 @@ namespace Duler.Controllers {
                     var cajLogin = _db.CajLogin.FirstOrDefault(x => x.CajUserFk == user.Id);
                     var key = UserManager.GenerateRandomKey(256);
 
+                    int maxc = 0;
+                    if(_db.CajLogin.Count() > 0) {
+                        maxc = (int)_db.CajLogin.Select(x => x.Id).Max() + 1;
+                    }
+
                     if (cajLogin == null) {
                         cajLogin = new CajLogin() {
                             CajUserFk = user.Id,
                             Creation = DateTime.Now,
                             Expiration = DateTime.Now.AddHours(1),
                             Key = key,
-                            Id = _db.CajLogin.Select(x => x.Id).Max() + 1
+                            Id = maxc
                         };
                         _db.CajLogin.Add(cajLogin);
                     } else {
