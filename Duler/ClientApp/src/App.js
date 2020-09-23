@@ -15,7 +15,7 @@ export default class App extends Component {
         return (
             <Layout>
                 <AuthorizeRoute exact path='/:id?' component={Main} />
-                <Route exact path='/auth/register' component={Registration} />
+                <AuthorizeRoute exact path='/auth/register' component={Registration} />
                 <Route exact path='/auth/login' component={Login} />
             </Layout>
         );

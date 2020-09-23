@@ -4,9 +4,17 @@ import authManager from './AuthManager';
 export class Login extends Component {
     constructor(props) {
         super(props);
-
+        this.state = {
+            username: '',
+            password: ''
+        };
         this.handleFormOnSubmit = this.handleFormOnSubmit.bind(this);
+        this.handleUsernameChange = this.handleUsernameChange.bind(this);
+        this.handlePasswordChange = this.handlePasswordChange.bind(this);
     }
+
+    handleUsernameChange(e) { this.setState({ username: e.target.value }); }
+    handlePasswordChange(e) { this.setState({ password: e.target.value }); }
 
     async handleFormOnSubmit(e) {
         e.preventDefault();
@@ -24,6 +32,9 @@ export class Login extends Component {
         let responseData = await response.json();
         if (response.ok) {
             authManager.setToken(responseData);
+            authManager._isAuthenticated = true;
+            console.log(this.state.username);
+            authManager._user = this.state.username;
 
             let url = new URL(window.location.href);
             let c = url.searchParams.get("returnUrl");
@@ -35,34 +46,21 @@ export class Login extends Component {
 
     render() {
         return (
-            <div className="form-control">
-                <form onSubmit={this.handleFormOnSubmit}>
-                    <div className="input-group">
-                        <label>Username:</label>
-                        <input type="text" name="Username" required />
-                    </div>
+            <form onSubmit={this.handleFormOnSubmit}>
+                <div className="form-group">
+                    <label>Username:</label>
+                    <input type="text" name="Username" onChange={this.handleUsernameChange} className="form-control" required />
+                </div>
 
-                    <div className="input-group">
-                        <label>Password:</label>
-                        <input type="password" name="Password" required />
-                    </div>
+                <div className="form-group">
+                    <label>Password:</label>
+                    <input type="password" name="Password" onChange={this.handlePasswordChange} className="form-control" required />
+                </div>
 
-                    <div className="input-group">
-                        <input className="btn btn-primary" type="submit" value="Login" />
-                    </div>
-                </form>
-            </div>
+                <div className="form-group">
+                    <input className="btn btn-primary" type="submit" value="Login" />
+                </div>
+            </form>
         );
     }
-
-    //getReturnUrl(state) {
-    //    const params = new URLSearchParams(window.location.search);
-    //    const fromQuery = params.get(QueryParameterNames.ReturnUrl);
-    //    if (fromQuery && !fromQuery.startsWith(`${window.location.origin}/`)) {
-    //        // This is an extra check to prevent open redirects.
-    //        throw new Error("Invalid return url. The return url needs to have the same origin as the current page.")
-    //    }
-    //    return (state && state.returnUrl) || fromQuery || `${window.location.origin}/`;
-    //}
-
 }

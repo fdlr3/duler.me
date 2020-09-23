@@ -20,11 +20,7 @@ export class EditFolderForm extends Component {
 
     async handleSaveButtonClick(event) {
         event.preventDefault();
-        
-
         let newName = document.getElementById("editFolderName").innerHTML;
-        console.log(this.props.guid);
-        console.log(newName);
 
         if (newName !== undefined && newName.length > 0) {
             let data = new FormData();
@@ -51,9 +47,10 @@ export class EditFolderForm extends Component {
     }
 
     render() {
+        console.log(this.props.folderId);
         return (
-            <tr key="0">
-                <th><div id="editFolderName" className="btn btn-danger" contentEditable>{this.props.folderName}</div></th>
+            <tr key={this.props.folderId}>
+                <th><div id="editFolderName" className="btn btn-danger" contentEditable suppressContentEditableWarning={true}>{this.props.folderName}</div></th>
                 <th></th>
                 <th><button className="btn btn-primary" onClick={this.handleSaveButtonClick}>Save</button></th>
             </tr>

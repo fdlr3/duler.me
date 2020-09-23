@@ -1,6 +1,4 @@
 ﻿export class AuthManager {
-    _callbacks = [];
-    _nextSubscriptionId = 0;
     _user = null;
     _isAuthenticated = false;
 

@@ -3,6 +3,7 @@ import { EditFolderForm } from './EditFolderForm';
 import { UploadFileForm } from './UploadFileForm';
 import { DownloadFilesButton } from './DownloadFilesButton';
 import { DeleteFilesButton } from './DeleteFilesButton';
+import { Loader } from '../Loader';
 import authManager from '../auth/AuthManager';
 
 export class ListFolder extends Component {
@@ -12,7 +13,7 @@ export class ListFolder extends Component {
         super(props);
         this.state = {
             checkedValues: [],
-            data: '',
+            data: {},
             loading: true
         };
         this.refreshObjects = this.refreshObjects.bind(this);
@@ -63,7 +64,7 @@ export class ListFolder extends Component {
     handleAddFolderButton() {
         let newData = Object.assign(this.state.data);
 
-        newData.listObjects = [{ id: '', name: '', type: 2 }, ...this.state.data.listObjects];
+        newData = [{ id: '', name: '', type: 2 }, ...this.state.data];
         this.setState({
             checkedValues: this.state.checkedValues,
             data: newData,
@@ -74,14 +75,14 @@ export class ListFolder extends Component {
     handleEditFolderButton(event) {
         //event.preventDefault();
         console.log(event.target.value);
-        let selectedFolder = this.state.data.listObjects.filter(obj => obj.id === event.target.value)[0];
+        let selectedFolder = this.state.data.filter(obj => obj.id === event.target.value)[0];
         console.log(selectedFolder);
 
         if (selectedFolder !== undefined) {
             let data = Object.assign(this.state.data);
-            for (let i = 0; i < data.listObjects.length; i++) {
-                if (data.listObjects[i].id === event.target.value) {
-                    data.listObjects[i].type = 3;
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].id === event.target.value) {
+                    data[i].type = 3;
                 }
             }
             this.setState({
@@ -102,15 +103,16 @@ export class ListFolder extends Component {
         } else if (obj.type === 1) { //folder
             return <tr key={obj.id} className="no-hover">
                 <td colSpan="2"><a className="btn btn-primary" href={'/' + obj.id}>{obj.name}</a></td>
-                <td><button value={obj.id} onClick={ref.handleEditFolderButton}>Edit</button></td>
+                <td>
+                    <button className="btn btn-warning" value={obj.id} onClick={ref.handleEditFolderButton}>Edit</button>
+                    <button className="btn btn-danger" value={obj.id} onClick={ref.handleRemoveFolderClick}>Remove</button>
+                </td>
             </tr>;
         } else if (obj.type === 2) { //new folder
             return <EditFolderForm guid={ref.props.guid} rfunc={ref.refreshObjects} />;
-        } else if (obj.type === 3) {
+        } else if (obj.type === 3) { //edit folder
             return <EditFolderForm guid={ref.props.guid} folderId={obj.id} folderName={obj.name} rfunc={ref.refreshObjects} />;
         }
-        
-        
     }
 
     static renderFilesTable(files, ref) {
@@ -136,16 +138,15 @@ export class ListFolder extends Component {
 
     render() {
         let context = this.state.loading ?
-            <p><em>Loading...</em></p> :
-            ListFolder.renderFilesTable(this.state.data.listObjects, this);
+            <Loader/> :
+            ListFolder.renderFilesTable(this.state.data, this);
 
-        //<EditFolderForm guid={this.props.guid} rfunc={this.refreshObjects} />
         return (
             <div>
                 <UploadFileForm guid={this.props.guid} rfunc={this.refreshObjects} />
                 <button className="btn btn-primary" onClick={this.handleAddFolderButton}>Add folder</button>
-                <DownloadFilesButton fileGuids={this.getCheckedValues} />
-                <DeleteFilesButton fileGuids={this.getCheckedValues} rfunc={this.refreshObjects} />
+                <DownloadFilesButton selectedFiles={this.state.checkedValues} />
+                <DeleteFilesButton selectedFiles={this.state.checkedValues} rfunc={this.refreshObjects} />
                 <div>
                     {context}
                 </div>
@@ -162,6 +163,13 @@ export class ListFolder extends Component {
             }
         });
         const data = await response.json();
+        
+        //push new folder
+        data.push({
+            id: '00000000-0000-0000-0000-000000000000',
+            name: '',
+            type: -1
+        });
         this.setState({ data: data, loading: false });
     }
 }

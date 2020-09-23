@@ -1,6 +1,7 @@
 ﻿using Duler.Core;
 using Duler.Data;
 using Duler.Models;
+using Duler.Models.Folder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -27,10 +28,22 @@ namespace Duler.Controllers {
         /// <returns>Root folder GUID</returns>
         [HttpGet]
         [CustomAuthorize]
-        [Route("/api/folder/root")]
-        public IActionResult GetRootGUID() {
-            var retFolder = _db.CajFolder.FirstOrDefault(x => x.ParentId == null);
-            return Ok(retFolder?.Id.ToString() ?? string.Empty);
+        [Route("/api/folder-info/{id?}")]
+        public IActionResult GetFolderInfo(Guid? id) {
+            FolderInfoModel model = null;
+            CajFolder retFolder = null;
+            
+            if(id.HasValue)
+                retFolder = _db.CajFolder.FirstOrDefault(x => x.Id == id.Value);
+            else
+                retFolder = _db.CajFolder.FirstOrDefault(x => x.ParentId == null);
+
+            if (retFolder != null)
+                model = new FolderInfoModel() {
+                    Id = retFolder.Id,
+                    Name = retFolder.Name
+                };
+            return Ok(model);
         }
 
         /// <summary>
@@ -61,28 +74,17 @@ namespace Duler.Controllers {
         /// <returns></returns>
         [HttpGet]
         [CustomAuthorize]
-        [Route("/api/folder/{id?}")]
-        public ObjectsModel Get(Guid? id) {
+        [Route("/api/folder/{id}")]
+        public List<ObjectsModel> Get(Guid id) {
             try {
+                var model = new List<ObjectsModel>();
 
-                var model = new ObjectsModel();
-                //display root folder
-                if (!id.HasValue) {
-                    var root = _db.CajFolder.FirstOrDefault(x => x.ParentId == null);
-                    model.Name = root.Name;
-                    model.Id = root.Id.ToString();
-                } else {
-                    var folder = _db.CajFolder.FirstOrDefault(x => x.Id == id.Value);
-                    model.Name = folder.Name;
-                    model.Id = folder.Id.ToString();
-                }
-
-                model.ListObjects.AddRange(_db.CajFolder.Where(x => x.ParentId == new Guid(model.Id)).Select(x => new ObjectsModel.ObjectInFolderModel(x)).ToList());
-                model.ListObjects.AddRange(_db.CajFileInFolder
-                    .Where(x => x.FkFolder == new Guid(model.Id))
+                model.AddRange(_db.CajFolder.Where(x => x.ParentId.HasValue && x.ParentId.Value == id).Select(x => new ObjectsModel(x)).ToList());
+                model.AddRange(_db.CajFileInFolder
+                    .Where(x => x.FkFolder == id)
                     .Include(x => x.FkFileNavigation)
                     .Select(x => x.FkFileNavigation)
-                    .Select(x => new ObjectsModel.ObjectInFolderModel(x)).ToList());
+                    .Select(x => new ObjectsModel(x)).ToList());
                 return model;
             } catch (Exception ex) {
                 _logger.LogInformation("{0} - Error: {1}", nameof(Get), ex.ToString());

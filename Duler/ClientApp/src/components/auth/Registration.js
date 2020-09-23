@@ -45,7 +45,7 @@ export class Registration extends Component {
         this.setState({ passwordConfirm: e.target.value });
 
         if (this.state.password !== e.target.value) {
-            this.setState({passwordConfirmError: 'Password doesnt match!'});
+            this.setState({ passwordConfirmError: 'Password doesnt match!' });
         } else {
             this.setState({ passwordConfirmError: '' });
         }
@@ -53,31 +53,29 @@ export class Registration extends Component {
 
     render() {
         return (
-            <div className="form-control">
-                <form onSubmit={this.handleRegisterSubmit}>
+            <form onSubmit={this.handleRegisterSubmit}>
 
-                    <div className="input-group">
-                        <label>Username:</label>
-                        <input type="text" name="Username" value={this.state.username} onChange={this.handleUsernameChange} required />
-                    </div>
+                <div className="form-group">
+                    <label>Username:</label>
+                    <input type="text" name="Username" value={this.state.username} onChange={this.handleUsernameChange} className="form-control" required />
+                </div>
 
-                    <div className="input-group">
-                        <label>Password:</label>
-                        <input id="passwordInput" type="password" name="Password" value={this.state.password} onChange={this.handlePasswordChange} required />
-                    </div>
+                <div className="form-group">
+                    <label>Password:</label>
+                    <input id="passwordInput" type="password" name="Password" value={this.state.password} onChange={this.handlePasswordChange} className="form-control" required />
+                </div>
 
-                    <div className="input-group">
-                        <label>Confirm password:</label>
-                        <input type="password" name="PasswordConfirm" onChange={this.handleConfirmPasswordChange} value={this.state.passwordConfirm} required />
-                        <span>{this.state.passwordConfirmError}</span>
-                    </div>
+                <div className="form-group">
+                    <label>Confirm password:</label>
+                    <input type="password" name="PasswordConfirm" onChange={this.handleConfirmPasswordChange} value={this.state.passwordConfirm} className="form-control" required />
+                    <span>{this.state.passwordConfirmError}</span>
+                </div>
 
-                    <div className="input-group">
-                        <input type="submit" value="Register" />
-                    </div>
+                <div className="form-group">
+                    <input type="submit" value="Register" />
+                </div>
 
-                </form>
-            </div>
+            </form>
         );
     }
 }

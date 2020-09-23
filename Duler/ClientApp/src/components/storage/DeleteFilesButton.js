@@ -28,8 +28,10 @@ export class DeleteFilesButton extends Component {
     }
 
     render() {
+        let buttonDisabled = this.props.selectedFiles.length === 0;
+
         return (
-            <button className="btn btn-primary" onClick={this.submitDeleteButton}>
+            <button className="btn btn-primary" onClick={this.submitDeleteButton} disabled={buttonDisabled}>
                 Delete
             </button>
         );

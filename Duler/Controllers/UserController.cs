@@ -19,6 +19,7 @@ namespace Duler.Controllers {
         }
 
         [HttpPost]
+        [CustomAuthorize]
         [Route("/api/user/register")]
         public IActionResult Register([FromForm] RegisterUserModel model) {
             if(model.Username?.Count() > 0 && model.Password?.Count() > 0) {
@@ -73,7 +74,7 @@ namespace Duler.Controllers {
         [HttpPost]
         [Route("/api/user/logout")]
         public IActionResult Logout([FromForm]LogoutModel model) {
-            var loginKey = _db.CajLogin.FirstOrDefault(x => x.Key == model.Key);
+            var loginKey = _db.CajLogin.FirstOrDefault(x => x.Key == model.Token);
             _db.CajLogin.Remove(loginKey);
             _db.SaveChanges();
             return Ok();

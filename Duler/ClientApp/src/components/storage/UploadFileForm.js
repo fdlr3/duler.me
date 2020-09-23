@@ -48,12 +48,14 @@ export class UploadFileForm extends Component {
     }
 
     render() {
+        const uploadDisabled = this.state.selectedFiles.length === 0;
+
         return (
             <form onSubmit={this.handleSubmit}>
                 <input type="hidden" name="FolderId" value={this.props.guid} />
                 <div className="input-group">
                     <div className="input-group-prepend">
-                        <input type="submit" className="input-group-text" id="inputGroupFileAddon01" value="Upload" />
+                        <input type="submit" className="input-group-text" id="inputGroupFileAddon01" value="Upload" disabled={uploadDisabled}/>
                     </div>
                     <div className="custom-file">
                         <input type="file" name="Files" className="custom-file-input" id="inputGroupFile01"
