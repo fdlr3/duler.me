@@ -27,7 +27,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Uploads\" />
+    <Content Remove="Uploads\11f98cc3-d143-4e23-8db2-68e7d0ec7ef1\ClientApp\package-lock.json" />
+    <Content Remove="Uploads\11f98cc3-d143-4e23-8db2-68e7d0ec7ef1\ClientApp\package.json" />
+    <Content Remove="Uploads\11f98cc3-d143-4e23-8db2-68e7d0ec7ef1\ClientApp\public\manifest.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Uploads\11f98cc3-d143-4e23-8db2-68e7d0ec7ef1\ClientApp\package-lock.json" />
+    <None Include="Uploads\11f98cc3-d143-4e23-8db2-68e7d0ec7ef1\ClientApp\package.json" />
+    <None Include="Uploads\11f98cc3-d143-4e23-8db2-68e7d0ec7ef1\ClientApp\public\manifest.json" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

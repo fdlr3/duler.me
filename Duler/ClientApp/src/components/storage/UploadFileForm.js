@@ -1,5 +1,6 @@
 ﻿import React, { Component } from 'react';
 import authManager from '../auth/AuthManager';
+import axios from "axios";
 
 export class UploadFileForm extends Component {
 
@@ -7,12 +8,15 @@ export class UploadFileForm extends Component {
         super(props);
 
         this.state = {
-            selectedFiles: []
+            selectedFiles: [],
+            uploadPercentage: 0,
+            uploadingFile: false
         };
 
         this.handleSubmit = this.handleSubmit.bind(this);
         this.refreshList = this.refreshList.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.handleSetPercentage = this.handleSetPercentage.bind(this);
     }
 
     refreshList() {
@@ -24,9 +28,14 @@ export class UploadFileForm extends Component {
         this.setState({ selectedFiles: event.target.files })
     }
 
+    handleSetPercentage(event) {
+        this.setState({ uploadPercentage: Math.round((100 * event.loaded) / event.total) });
+    }
+
     async handleSubmit(event) {
         event.preventDefault();
-        
+        this.setState({ uploadingFile: true });
+
         const data = new FormData(event.target);
         const files = this.state.selectedFiles;
 
@@ -35,35 +44,46 @@ export class UploadFileForm extends Component {
                 data.append(`Files[${i}]`, files[i])
             }
 
-            await fetch("/api/file/upload", {
-                method: 'POST',
-                body: data,
+            await axios.create({
+                baseURL: window.location.origin,
                 headers: {
-                    'auth': authManager.getToken()
+                    'Content-type': 'application/json'
                 }
+            }).post('/api/file/upload', data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'auth': authManager.getToken()
+                },
+                onUploadProgress: this.handleSetPercentage
             });
-            this.props.rfunc();
-            this.setState({ selectedFiles: []});
+
+            this.refreshList();
+            this.setState({ selectedFiles: [], uploadingFile: false });
         }
     }
 
     render() {
-        const uploadDisabled = this.state.selectedFiles.length === 0;
+        const displayStyle = this.state.uploadingFile ? 'block' : 'none';
 
         return (
-            <form onSubmit={this.handleSubmit}>
-                <input type="hidden" name="FolderId" value={this.props.guid} />
-                <div className="input-group">
-                    <div className="input-group-prepend">
-                        <input type="submit" className="input-group-text" id="inputGroupFileAddon01" value="Upload" disabled={uploadDisabled}/>
+            <div>
+                <form onSubmit={this.handleSubmit}>
+                    <input type="hidden" name="FolderId" value={this.props.guid} />
+                    <div className="input-group">
+                        <div className="input-group-prepend">
+                            <input type="submit" className="input-group-text" id="inputGroupFileAddon01" value="Upload" disabled={this.state.selectedFiles.length === 0} />
+                        </div>
+                        <div className="custom-file">
+                            <input type="file" name="Files" className="custom-file-input" id="inputGroupFile01"
+                                aria-describedby="inputGroupFileAddon01" multiple onChange={this.handleChange} />
+                            <label className="custom-file-label" htmlFor="inputGroupFile01">{this.state.selectedFiles.length} files chosen.</label>
+                        </div>
                     </div>
-                    <div className="custom-file">
-                        <input type="file" name="Files" className="custom-file-input" id="inputGroupFile01"
-                            aria-describedby="inputGroupFileAddon01" multiple onChange={this.handleChange} />
-                        <label className="custom-file-label" htmlFor="inputGroupFile01">{this.state.selectedFiles.length} files chosen.</label>
-                    </div>
+                </form>
+                <div id="myProgress">
+                    <div id="myBar" style={{ width: this.state.uploadPercentage + '%', display: displayStyle }}></div>
                 </div>
-            </form>
+            </div>
         );
     }
 

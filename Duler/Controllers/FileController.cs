@@ -50,6 +50,7 @@ namespace Duler.Controllers {
         [HttpPost]
         [CustomAuthorize]
         [Route("/api/file/upload")]
+        [RequestSizeLimit(500_000_000)]
         public IActionResult UploadFiles([FromForm] UploadFilesModel model) {
             string rootPath = Path.Combine(_environment.ContentRootPath, "Uploads");
             try {
@@ -115,7 +116,6 @@ namespace Duler.Controllers {
                     decompressedFiles.Add(serverDestinationFilePath);
                 }
             }
-
 
             //4. Compress them
             string serverCompressedFilePath = Path.Combine(destinationFolder, $"{folderName}.zip");

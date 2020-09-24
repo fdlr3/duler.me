@@ -4,6 +4,7 @@ using Duler.Models;
 using Duler.Models.Folder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,12 @@ namespace Duler.Controllers {
 
         private readonly CajDbContext _db;
         private readonly ILogger<FolderController> _logger;
+        private readonly IHostEnvironment _env;
 
-        public FolderController(CajDbContext db, ILogger<FolderController> logger) {
+        public FolderController(CajDbContext db, ILogger<FolderController> logger, IHostEnvironment env) {
             _db = db;
             _logger = logger;
+            _env = env;
         }
 
         /// <summary>
@@ -124,7 +127,10 @@ namespace Duler.Controllers {
         [CustomAuthorize]
         [Route("/api/folder/{id}")]
         public IActionResult Delete(Guid id) {
+            string rootPath = System.IO.Path.Combine(_env.ContentRootPath, "Uploads");
             var folder = _db.CajFolder.FirstOrDefault(x => x.Id == id);
+            var filesToDelete = new List<string>();
+
             if (folder != null) {
                 var filesInFolder = _db.CajFileInFolder
                     .Where(x => x.FkFolder == id);
@@ -132,13 +138,18 @@ namespace Duler.Controllers {
                 //remove all files
                 var listRemovedFiles = new List<CajFile>();
                 foreach (var file in filesInFolder) {
-                    listRemovedFiles.Add(_db.CajFile.FirstOrDefault(x => x.Id == file.FkFile));
+                    var selectedFile = _db.CajFile.FirstOrDefault(x => x.Id == file.FkFile);
+                    listRemovedFiles.Add(selectedFile);
+                    filesToDelete.Add(selectedFile.Id.ToString());
                 }
                 _db.CajFileInFolder.RemoveRange(filesInFolder);
                 _db.CajFile.RemoveRange(listRemovedFiles);
 
                 _db.CajFolder.Remove(folder);
                 _db.SaveChanges();
+
+                foreach(var file in filesToDelete)
+                    CajStorage.Core.IOManager.RemoveFile(System.IO.Path.Combine(rootPath, file));
             }
 
             return Ok();

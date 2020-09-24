@@ -11,7 +11,7 @@ export class DeleteFilesButton extends Component {
     async submitDeleteButton(event) {
         if (window.confirm("Are you sure?")) {
             const data = new FormData();
-            const ids = this.props.fileGuids();
+            const ids = this.props.selectedFiles;
             for (let i = 0; i < ids.length; i++)
                 data.append(`FileGuids[${i}]`, ids[i])
 

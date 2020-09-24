@@ -25,6 +25,7 @@ export class ListFolder extends Component {
     }
 
     refreshObjects() {
+        console.log('refreshing!');
         this.getFolder();
     }
 
