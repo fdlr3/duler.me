@@ -38,10 +38,6 @@
     <None Include="Uploads\11f98cc3-d143-4e23-8db2-68e7d0ec7ef1\ClientApp\public\manifest.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ClientApp\src\components\storage\folders\NewFolder\" />
-  </ItemGroup>
-
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">

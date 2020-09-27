@@ -7,6 +7,7 @@ import { EditFolderForm } from './folders/EditFolderForm';
 import { Loader } from '../Loader';
 import authManager from '../auth/AuthManager';
 import { DisplayFolder } from './folders/DisplayFolder';
+import { SearchBar } from './SearchBar';
 
 export class ListFolder extends Component {
     static displayName = ListFolder.name;
@@ -68,14 +69,14 @@ export class ListFolder extends Component {
 
 
     static RenderObject(obj, ref) {
-        if (obj.type === 0) { //file
+        if (obj.type === 0 && !obj.hidden) { //file
             return <DisplayFile
                 key={obj.id}
                 id={obj.id}
                 name={obj.name}
                 handleClick={ref.handleCheckboxClick}
             />;
-        } else if (obj.type === 1) { //folder
+        } else if (obj.type === 1 && !obj.hidden) { //folder
             return <DisplayFolder
                 key={obj.id}
                 id={obj.id}
@@ -108,6 +109,13 @@ export class ListFolder extends Component {
 
         return (
             <div>
+                <div>
+                    <SearchBar
+                        getItems={this.getItems}
+                        setItems={this.setItems}
+                    />
+                </div>
+
                 <div className="dropdown show">
                     <a href="#nogo" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <svg width="2em" height="2em" viewBox="0 0 16 16" className="bi bi-three-dots" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -140,6 +148,7 @@ export class ListFolder extends Component {
                         </DownloadFilesButton>
                     </div>
                 </div>
+
                 <div>
                     {context}
                 </div>

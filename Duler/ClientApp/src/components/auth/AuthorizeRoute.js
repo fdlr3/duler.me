@@ -21,10 +21,14 @@ export class AuthorizeRoute extends Component {
             method: 'POST',
             body: data
         });
-        if (response.status === 200) {
-            this.setState({ authenticated: true, ready: true });
-        } else {
-            this.setState({ authenticated: false, ready: true});
+        if (response.ok) {
+            let authResponse = await response.json();
+            console.log(authResponse);
+            if (authResponse.auth === true) {
+                this.setState({ authenticated: true, ready: true });
+            } else {
+                this.setState({ authenticated: false, ready: true });
+            }   
         }
     }
 

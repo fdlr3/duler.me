@@ -22,6 +22,7 @@ namespace Duler.Models {
         public Guid Id { get; set; }
         public string Name { get; set; }
         public byte Type { get; set; }
+        public bool Hidden { get; set; } = false;
     }
 
 }

@@ -83,7 +83,9 @@ namespace Duler.Controllers {
         [HttpPost]
         [Route("/api/user/is-authorized")]
         public IActionResult IsAuthorized([FromForm] IsAuthorizedModel model) {
-            return new AuthorizeUserManager(_db).ValidateToken(model.Token) ? StatusCode(200) : StatusCode(401);
+            return new AuthorizeUserManager(_db).ValidateToken(model.Token) ? 
+                Ok(new { auth = true }) : 
+                Ok(new { auth = false });
         }
 
     }
