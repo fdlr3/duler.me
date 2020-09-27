@@ -100,27 +100,31 @@ namespace Duler.Controllers {
         [Route("/api/folder")]
         public IActionResult Add([FromForm] EditFolderModel model) {
             var selectedFolder = _db.CajFolder.FirstOrDefault(x => x.Id == model.CurrentFolderId);
+            CajFolder folder = null;
             if (selectedFolder != null) {
                 //editing folder
                 if (model.DestinationFolderId.HasValue) {
-                    var existingFolder = _db.CajFolder.FirstOrDefault(x => x.Id == model.DestinationFolderId.Value);
-                    if (existingFolder != null) {
-                        existingFolder.Name = model.Name;
-                        _db.CajFolder.Update(existingFolder);
+                    folder = _db.CajFolder.FirstOrDefault(x => x.Id == model.DestinationFolderId.Value);
+                    if (folder != null) {
+                        folder.Name = model.Name;
+                        _db.CajFolder.Update(folder);
                         _db.SaveChanges();
                     }
                 } else {
-                    _db.CajFolder.Add(new CajFolder() {
+                    folder = new CajFolder()
+                    {
                         Id = Guid.NewGuid(),
                         Created = DateTime.Now,
                         Modified = DateTime.Now,
                         Name = model.Name,
                         ParentId = model.CurrentFolderId
-                    });
+                    };
+
+                    _db.CajFolder.Add(folder);
                     _db.SaveChanges();
                 }
             }
-            return Ok();
+            return Ok(folder != null ? new ObjectsModel(folder) : null);
         }
 
         [HttpPost]

@@ -24,7 +24,7 @@ export class Main extends Component {
 
         return (
             <div>
-                <h1 id="tabelLabel">{this.state.pageName}</h1> <br />
+                <h1 className="text-center" id="tabelLabel">{this.state.pageName}</h1> <br />
 
                 <div className="row">
                     <Breadcrumbs guid={this.state.folderGuid} />
@@ -51,7 +51,6 @@ export class Main extends Component {
             }
         });
         const data = await response.json();
-        console.log(data);
         this.setState({ folderGuid: data.id, pageName: data.name, loading: false });
     }
 }

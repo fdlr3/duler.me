@@ -32,19 +32,29 @@ namespace Duler.Controllers {
         [CustomAuthorize]
         [Route("/api/file/remove-files")]
         public IActionResult RemoveFiles([FromForm] SelectFilesModel model) {
-            string rootPath = Path.Combine(_environment.ContentRootPath, "Uploads");
-            foreach (Guid fileId in model.FileGuids) {
-                var file = _db.CajFile.FirstOrDefault(x => x.Id == fileId);
-                if (file != null) {
-                    string filePath = Path.Combine(rootPath, file.Id.ToString());
-                    if (IOManager.RemoveFile(filePath)) {
-                        _db.CajFileInFolder.RemoveRange(_db.CajFileInFolder.Where(x => x.FkFile == file.Id));
-                        _db.CajFile.Remove(file);
+            try
+            {
+                string rootPath = Path.Combine(_environment.ContentRootPath, "Uploads");
+                foreach (Guid fileId in model.FileGuids)
+                {
+                    var file = _db.CajFile.FirstOrDefault(x => x.Id == fileId);
+                    if (file != null)
+                    {
+                        string filePath = Path.Combine(rootPath, file.Id.ToString());
+                        if (IOManager.RemoveFile(filePath))
+                        {
+                            _db.CajFileInFolder.RemoveRange(_db.CajFileInFolder.Where(x => x.FkFile == file.Id));
+                            _db.CajFile.Remove(file);
+                        }
                     }
                 }
+                _db.SaveChanges();
+                return StatusCode(204);
+            } catch(Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+                return StatusCode(404);
             }
-            _db.SaveChanges();
-            return Ok();
         }
 
         [HttpPost]

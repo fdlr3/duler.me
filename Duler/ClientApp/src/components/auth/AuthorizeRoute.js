@@ -15,7 +15,6 @@ export class AuthorizeRoute extends Component {
 
     async componentDidMount() {
         this.setState({ ready: false });
-        console.log(authManager.getToken());
         let data = new FormData();
         data.append("Token", authManager.getToken());
         const response = await fetch('/api/user/is-authorized', {

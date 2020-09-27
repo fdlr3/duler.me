@@ -12,7 +12,6 @@ export class Breadcrumbs extends Component {
     }
 
     render() {
-        console.log(this.state.paths.length);
         if (this.state.paths.length === 0)
             return (<div>Loading...</div>);
         return (

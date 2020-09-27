@@ -33,7 +33,6 @@ export class Login extends Component {
         if (response.ok) {
             authManager.setToken(responseData);
             authManager._isAuthenticated = true;
-            console.log(this.state.username);
             authManager._user = this.state.username;
 
             let url = new URL(window.location.href);
